@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Novedades el León</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #FBBF24 0%, #F97316 100%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        #pantalla-carga {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .telon-arriba {
+            transform: translateY(-100%);
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(15px) scale(0.98);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .animate-fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-pop {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Tipografía SF Pro para la firma */
+        .sf-pro {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen font-sans text-black m-0 overflow-hidden" id="body-container">
+
+    <!-- Efectos de Sonido -->
+    <audio id="audio-aplausos" src="https://actions.google.com/sounds/v1/crowds/light_applause.ogg"
+        preload="auto"></audio>
+    <audio id="audio-celebracion" src="https://actions.google.com/sounds/v1/crowds/crowd_cheer.ogg"
+        preload="auto"></audio>
+
+    <!-- PANTALLA DE CARGA (TELÓN) -->
+    <div id="pantalla-carga">
+        <h1
+            class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 mb-10 text-center tracking-widest uppercase px-4 drop-shadow-lg">
+            Bienvenidos a la<br>Rifa de Don León
+        </h1>
+        <button id="btn-comenzar"
+            class="px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-extrabold text-xl rounded-full shadow-[0_0_30px_rgba(251,191,36,0.6)] hover:scale-105 transition-transform animate-pulse">
+            Quitar Telón para Comenzar
+        </button>
+    </div>
+
+    <!-- BOTÓN DE MENÚ (Hamburguesa) -->
+    <button id="btn-menu-info"
+        class="fixed top-5 right-5 z-40 bg-black/90 hover:bg-black text-yellow-400 p-3 rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.3)] transition-transform hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <!-- MODAL DE INFORMACIÓN (Menú oculto) -->
+    <div id="modal-info"
+        class="fixed inset-0 z-[60] bg-black/70 backdrop-blur-md hidden items-center justify-center p-4">
+        <div
+            class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-fade-in border-4 border-orange-400">
+            <button id="btn-cerrar-info"
+                class="absolute top-4 right-4 text-gray-400 hover:text-red-600 transition-colors">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h2
+                class="text-2xl font-black text-orange-600 mb-4 uppercase tracking-wide border-b border-orange-100 pb-2">
+                Información del Panel</h2>
+            <div class="space-y-4 text-sm text-gray-700 font-medium leading-relaxed">
+                <p><strong>¡Bienvenido al panel de la Rifa de Don León!</strong> 🦁</p>
+                <p>Este panel es <strong>exclusivo para los miembros de la tienda</strong>. Los clientes, en su vista
+                    pública, solo ven sus nombres (sin teléfonos ni boletos) y no tienen el botón para sacar al ganador.
+                </p>
+
+                <ul class="list-disc pl-5 space-y-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <li>Arriba puedes ver el <strong>contador de tiempo</strong> restante para la rifa.</li>
+                    <li>En la lista inferior puedes ver los teléfonos, boletos y la <strong>cantidad de participantes en
+                            tiempo real</strong>.</li>
+                    <li>El botón de ganador considera los boletos: quien tiene más boletos tiene más probabilidad de
+                        salir, pero todo es suerte. <strong>¡Un cliente con un solo boleto también puede ganar!</strong>
+                    </li>
+                </ul>
+
+                <p class="text-xs text-red-700 bg-red-50 p-3 rounded-xl border border-red-200">
+                    <strong>Aviso:</strong> <em>John Doe</em> y <em>Jane Doe</em> son personajes ficticios de prueba. Se
+                    eliminarán en cuanto agreguen a los clientes reales en el código.
+                </p>
+
+                <p class="text-center pt-2 font-bold text-gray-900 text-base">
+                    💬 Cualquier duda, preguntar en nuestro grupo de WhatsApp. ¡Gracias!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DEL GANADOR -->
+    <div id="modal-ganador"
+        class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md hidden flex-col items-center justify-center">
+        <!-- Contador -->
+        <div id="countdown-text"
+            class="text-[12rem] font-black text-white drop-shadow-[0_0_50px_rgba(255,255,255,0.8)] hidden">3</div>
+
+        <!-- Pantalla de Revelación -->
+        <div id="winner-display" class="hidden flex-col items-center text-center px-4 w-full">
+            <h3 class="text-3xl text-yellow-500 font-bold mb-8 uppercase tracking-widest">¡El boleto seleccionado es de!
+            </h3>
+
+            <div id="winner-icon"
+                class="h-40 w-40 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 text-black flex items-center justify-center font-black shadow-[0_0_60px_rgba(249,115,22,0.8)] mb-8 border-4 border-yellow-300">
+                <!-- Se inyecta el icono -->
+            </div>
+
+            <h2 id="winner-name"
+                class="text-6xl md:text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 uppercase tracking-widest drop-shadow-2xl">
+                <!-- Nombre -->
+            </h2>
+
+            <button id="btn-cerrar-modal"
+                class="mt-16 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full border border-white/30 transition-all uppercase tracking-widest">
+                Cerrar y sacar otro boleto
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="p-6 pb-10">
+        <header class="text-center mt-6 mb-8 w-full max-w-2xl mx-auto">
+            <h1 class="text-5xl font-extrabold text-black mb-2 uppercase tracking-wide drop-shadow-md">Novedades el León
+            </h1>
+            <p class="text-xl font-semibold text-black/80">Panel de Control Interno • Rifa de Bocina</p>
+
+            <!-- CONTADOR REGRESIVO -->
+            <div class="mt-6 flex justify-center gap-3 text-center">
+                <div
+                    class="bg-black text-yellow-400 rounded-xl p-3 min-w-[4.5rem] shadow-lg border border-yellow-500/30">
+                    <span id="cd-dias" class="text-3xl font-black block">00</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white/80">Días</span>
+                </div>
+                <div class="text-3xl font-black text-black pt-2">:</div>
+                <div
+                    class="bg-black text-yellow-400 rounded-xl p-3 min-w-[4.5rem] shadow-lg border border-yellow-500/30">
+                    <span id="cd-horas" class="text-3xl font-black block">00</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white/80">Hrs</span>
+                </div>
+                <div class="text-3xl font-black text-black pt-2">:</div>
+                <div
+                    class="bg-black text-yellow-400 rounded-xl p-3 min-w-[4.5rem] shadow-lg border border-yellow-500/30">
+                    <span id="cd-min" class="text-3xl font-black block">00</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white/80">Min</span>
+                </div>
+                <div class="text-3xl font-black text-black pt-2">:</div>
+                <div
+                    class="bg-black text-yellow-400 rounded-xl p-3 min-w-[4.5rem] shadow-lg border border-yellow-500/30">
+                    <span id="cd-seg" class="text-3xl font-black block">00</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white/80">Seg</span>
+                </div>
+            </div>
+            <p class="text-sm font-bold text-black/70 mt-3 uppercase tracking-wider">Para el gran sorteo (6 Nov 2026)
+            </p>
+        </header>
+
+        <main class="w-full max-w-3xl mx-auto">
+            <div class="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-2xl border border-orange-300 mb-10">
+                <h2
+                    class="text-2xl font-bold mb-6 text-black border-b border-orange-200 pb-4 flex justify-between items-center">
+                    <div class="flex items-center">
+                        Registro de Clientes
+                        <!-- Contador en tiempo real de clientes -->
+                        <span id="contador-participantes"
+                            class="ml-3 text-sm font-black text-orange-800 bg-orange-200 px-3 py-1 rounded-lg shadow-inner">
+                            0
+                        </span>
+                    </div>
+                    <span
+                        class="bg-black text-yellow-400 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-bold hidden md:inline-block">Panel
+                        exclusivo</span>
+                </h2>
+
+                <div id="lista-participantes" class="space-y-4">
+                    <!-- Se llena automáticamente -->
+                </div>
+            </div>
+
+            <!-- SECCIÓN DEL SORTEO -->
+            <div class="text-center mt-12 mb-8">
+                <button id="btn-sorteo"
+                    class="px-10 py-5 bg-red-600 hover:bg-red-700 text-white font-black text-3xl rounded-2xl shadow-[0_15px_40px_rgba(220,38,38,0.6)] hover:scale-105 hover:-translate-y-2 transition-all transform uppercase tracking-widest border-b-8 border-red-900 active:border-b-0 active:translate-y-2 w-full md:w-auto">
+                    🎲 Conseguir al Ganador
+                </button>
+                <div class="mt-6">
+                    <p
+                        class="inline-block bg-white/60 backdrop-blur-sm border border-red-400 text-red-900 font-bold uppercase tracking-widest text-sm px-6 py-3 rounded-xl shadow-sm">
+                        ⚠️ Aviso: Es el <span class="text-red-600 font-black text-lg">tercer ganador</span> quien se
+                        lleva el gran premio
+                    </p>
+                </div>
+            </div>
+
+            <!-- FIRMA JASSOS ESTUDIOS (Minimalista SF Pro) -->
+            <footer class="mt-16 text-center">
+                <p class="sf-pro text-black/40 text-[11px] font-semibold uppercase tracking-[0.25em]">
+                    Jassos Estudios
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // ====================================================================
+        // 🛠️ ZONA DE EDICIÓN MANUAL: AGREGA A TUS CLIENTES AQUÍ
+        // ====================================================================
+        const clientes = [
+            { nombre: "John Doe", telefono: "639-123-4567", compra: 450 },
+            { nombre: "Jane Doe", telefono: "639-987-6543", compra: 150 }
+        ];
+
+        // ====================================================================
+        // ⏱️ LÓGICA DEL CONTADOR (6 DE NOVIEMBRE 2026)
+        // ====================================================================
+        const fechaSorteo = new Date("November 6, 2026 18:00:00").getTime();
+
+        const actualizarContador = setInterval(function () {
+            const ahora = new Date().getTime();
+            const distancia = fechaSorteo - ahora;
+
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+            document.getElementById("cd-dias").innerText = dias.toString().padStart(2, '0');
+            document.getElementById("cd-horas").innerText = horas.toString().padStart(2, '0');
+            document.getElementById("cd-min").innerText = minutos.toString().padStart(2, '0');
+            document.getElementById("cd-seg").innerText = segundos.toString().padStart(2, '0');
+
+            if (distancia < 0) {
+                clearInterval(actualizarContador);
+                document.getElementById("cd-dias").innerText = "00";
+                document.getElementById("cd-horas").innerText = "00";
+                document.getElementById("cd-min").innerText = "00";
+                document.getElementById("cd-seg").innerText = "00";
+            }
+        }, 1000);
+
+        // ====================================================================
+        // ⚙️ LÓGICA DE INTERFAZ Y CLIENTES
+        // ====================================================================
+
+        function determinarSiEsMujer(nombreCompleto) {
+            const primerNombre = nombreCompleto.trim().split(' ')[0].toLowerCase();
+            const excepcionesMujer = ['carmen', 'isabel', 'beatriz', 'ruth', 'judith', 'guadalupe', 'rosario', 'inés', 'ines', 'abigail', 'raquel', 'esther', 'flor', 'luz'];
+            const excepcionesHombre = ['jose', 'josé', 'luca', 'andrea', 'josua'];
+
+            if (excepcionesHombre.includes(primerNombre)) return false;
+            if (excepcionesMujer.includes(primerNombre)) return true;
+            return primerNombre.endsWith('a');
+        }
+
+        const getSiluetaHombre = (clases) => `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="${clases}">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>`;
+
+        const getSiluetaMujer = (clases) => `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="${clases}">
+                <path d="M12 2C9.24 2 7 4.24 7 7c0 1.25.46 2.4 1.22 3.28C6.91 11.66 6 13.68 6 16v5h12v-5c0-2.32-.91-4.34-2.22-5.72C16.54 9.4 17 8.25 17 7c0-2.76-2.24-5-5-5zm0 1.5c1.93 0 3.5 1.57 3.5 3.5 0 .9-.35 1.72-.92 2.33C13.88 8.65 13 8 12 8s-1.88.65-2.58 1.33c-.57-.61-.92-1.43-.92-2.33 0-1.93 1.57-3.5 3.5-3.5zm-4.5 12.5c0-1.65 1.05-3.08 2.54-3.66C10.65 13 11.3 13.5 12 13.5s1.35-.5 1.96-1.16c1.49.58 2.54 2.01 2.54 3.66V19.5h-9v-3z"/>
+            </svg>`;
+
+        const contenedor = document.getElementById('lista-participantes');
+
+        function renderizarClientes() {
+            contenedor.innerHTML = '';
+
+            // Actualizar cantidad de clientes en tiempo real
+            document.getElementById('contador-participantes').innerText = `${clientes.length} Participantes`;
+
+            clientes.forEach((cliente, index) => {
+                const boletos = Math.floor(cliente.compra / 150);
+                const alcanzoMeta = boletos > 0;
+                const esMujer = determinarSiEsMujer(cliente.nombre);
+                const iconoAsignado = esMujer ? getSiluetaMujer("w-6 h-6") : getSiluetaHombre("w-6 h-6");
+
+                const div = document.createElement('div');
+                div.className = `animate-fade-in p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between transition-all shadow-sm ${alcanzoMeta ? 'bg-orange-50 border-orange-300' : 'bg-gray-100 border-gray-300 opacity-90'}`;
+                div.style.animationDelay = `${(index * 0.15) + 0.3}s`;
+
+                const htmlContent = `
+                    <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                        <div class="h-12 w-12 min-w-[3rem] rounded-full flex items-center justify-center font-black shadow-inner
+                            ${alcanzoMeta ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-black border border-orange-600' : 'bg-gray-300 text-gray-700'}">
+                            ${iconoAsignado}
+                        </div>
+                        <div>
+                            <p class="font-extrabold text-xl text-black">${cliente.nombre}</p>
+                            <p class="text-md font-medium text-black/80 mt-1">
+                                📞 ${cliente.telefono} <span class="mx-2 text-orange-400">|</span> 💰 $${cliente.compra} MXN
+                            </p>
+                        </div>
+                    </div>
+                    <div class="md:text-right flex items-center md:block">
+                        ${alcanzoMeta
+                        ? `<span class="inline-block px-5 py-2 bg-black text-yellow-400 text-sm font-bold rounded-lg shadow-md border border-yellow-500/30">🎟️ ${boletos} Boleto(s)</span>`
+                        : `<span class="inline-block px-4 py-2 bg-red-100 text-red-800 border border-red-200 text-sm font-bold rounded-lg">⚠️ Faltan $${150 - cliente.compra}</span>`
+                    }
+                    </div>
+                `;
+
+                div.innerHTML = htmlContent;
+                contenedor.appendChild(div);
+            });
+        }
+
+        // ====================================================================
+        // 🎉 LÓGICA DEL SORTEO Y MENÚS
+        // ====================================================================
+
+        // Control del Menú Hamburguesa
+        const btnMenu = document.getElementById('btn-menu-info');
+        const modalInfo = document.getElementById('modal-info');
+        const btnCerrarInfo = document.getElementById('btn-cerrar-info');
+
+        btnMenu.addEventListener('click', () => {
+            modalInfo.classList.remove('hidden');
+            modalInfo.classList.add('flex');
+        });
+
+        btnCerrarInfo.addEventListener('click', () => {
+            modalInfo.classList.add('hidden');
+            modalInfo.classList.remove('flex');
+        });
+
+        const btnSorteo = document.getElementById('btn-sorteo');
+        const modalGanador = document.getElementById('modal-ganador');
+        const countdownText = document.getElementById('countdown-text');
+        const winnerDisplay = document.getElementById('winner-display');
+        const winnerName = document.getElementById('winner-name');
+        const winnerIcon = document.getElementById('winner-icon');
+        const btnCerrarModal = document.getElementById('btn-cerrar-modal');
+        const audioCelebracion = document.getElementById('audio-celebracion');
+
+        btnSorteo.addEventListener('click', () => {
+            let tombola = [];
+            clientes.forEach(cliente => {
+                let boletos = Math.floor(cliente.compra / 150);
+                for (let i = 0; i < boletos; i++) {
+                    tombola.push(cliente);
+                }
+            });
+
+            if (tombola.length === 0) {
+                alert("Nadie tiene boletos suficientes para participar.");
+                return;
+            }
+
+            const ganador = tombola[Math.floor(Math.random() * tombola.length)];
+
+            modalGanador.classList.remove('hidden');
+            modalGanador.classList.add('flex');
+            winnerDisplay.classList.add('hidden');
+            countdownText.classList.remove('hidden');
+
+            let conteo = 3;
+            countdownText.innerText = conteo;
+            countdownText.classList.remove('animate-pop');
+            void countdownText.offsetWidth;
+            countdownText.classList.add('animate-pop');
+
+            const intervalo = setInterval(() => {
+                conteo--;
+                if (conteo > 0) {
+                    countdownText.innerText = conteo;
+                    countdownText.classList.remove('animate-pop');
+                    void countdownText.offsetWidth;
+                    countdownText.classList.add('animate-pop');
+                } else {
+                    clearInterval(intervalo);
+                    countdownText.classList.add('hidden');
+                    winnerDisplay.classList.remove('hidden');
+                    winnerDisplay.classList.add('flex');
+
+                    winnerName.innerText = ganador.nombre;
+                    const esMujer = determinarSiEsMujer(ganador.nombre);
+                    winnerIcon.innerHTML = esMujer ? getSiluetaMujer("w-20 h-20") : getSiluetaHombre("w-20 h-20");
+
+                    audioCelebracion.currentTime = 0;
+                    audioCelebracion.play().catch(e => console.log("Audio bloqueado", e));
+                }
+            }, 1000);
+        });
+
+        btnCerrarModal.addEventListener('click', () => {
+            modalGanador.classList.add('hidden');
+            modalGanador.classList.remove('flex');
+        });
+
+        // Evento del Telón
+        document.getElementById('btn-comenzar').addEventListener('click', function () {
+            const audio = document.getElementById('audio-aplausos');
+            audio.volume = 0.6;
+            audio.play().catch(e => console.log("Audio bloqueado", e));
+
+            const pantallaCarga = document.getElementById('pantalla-carga');
+            pantallaCarga.classList.add('telon-arriba');
+            document.getElementById('body-container').classList.remove('overflow-hidden');
+
+            renderizarClientes();
+
+            setTimeout(() => {
+                pantallaCarga.remove();
+            }, 1200);
+        });
+
+    </script>
+</body>
+
+</html>
