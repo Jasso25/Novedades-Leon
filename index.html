@@ -104,8 +104,8 @@
                     <span class="text-[10px] font-bold uppercase tracking-widest text-white/80">Seg</span>
                 </div>
             </div>
-            <p class="text-sm font-bold text-black/70 mt-3 uppercase tracking-wider">Para el gran sorteo (6 Nov 2026)
-            </p>
+            <p class="text-sm font-bold text-black/70 mt-3 uppercase tracking-wider">Para el gran sorteo (20 Nov 2026)
+</p>
         </header>
 
         <main class="w-full max-w-3xl mx-auto">
@@ -144,16 +144,22 @@
         // Esta lista debe ser igual a la del panel de administración
         // ====================================================================
         const clientes = [
-             { nombre: "Oscar Rodriguez", telefono: "639-167-4076", compra: 450 },
-             { nombre: "Aracely Lara Romero", telefono: "639-115-3087", compra: 150 },
-            { nombre: "Adriana Rivera", telefono: "639-119-0979", compra: 150 }
+              { nombre: "Oscar Rodriguez", telefono: "639-167-4076", compra: 450 },
+            { nombre: "Aracely Lara Romero", telefono: "639-115-3087", compra: 150 },
+            { nombre: "Adriana Rivera", telefono: "639-119-0979", compra: 150 },
+              { nombre: "Reina Esmeralda", telefono: "639-398-2389", compra: 150 },
+              { nombre: "Cesar Saenz", telefono: "639-399-4647", compra: 150 },
+              { nombre: "Daniela Jasso", telefono: "639-160-7624", compra: 150 },
+              { nombre: "Diana Reyes", telefono: "656-309-4251", compra: 150 },
+              { nombre: "Ana Amparan", telefono: "639-107-5232", compra: 450 },
+            { nombre: "Cinthia Torres", telefono: "639-124-1419", compra: 450 }
         ];
 
         // ====================================================================
         // ⏱️ LÓGICA DEL CONTADOR (6 DE NOVIEMBRE 2026)
         // ====================================================================
-        const fechaSorteo = new Date("November 6, 2026 18:00:00").getTime();
-
+       
+const fechaSorteo = new Date("November 20, 2026 18:00:00").getTime();
         const actualizarContador = setInterval(function () {
             const ahora = new Date().getTime();
             const distancia = fechaSorteo - ahora;
